@@ -6,6 +6,6 @@ public interface IOutput {
 
     void write(Object datum);
 
-    void write(List<Object> data);
+    void writeMany(List<Object> data);
 
 }

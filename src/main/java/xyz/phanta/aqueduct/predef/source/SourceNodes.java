@@ -3,9 +3,7 @@ package xyz.phanta.aqueduct.predef.source;
 import xyz.phanta.aqueduct.graph.node.INodeExecutor;
 
 import javax.annotation.Nonnegative;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class SourceNodes {
@@ -14,22 +12,22 @@ public class SourceNodes {
         return new LimitedSourceNode<>(iterations, delegate);
     }
 
-    public static <R, T> INodeExecutor<R> ofValues(T... values) {
+    public static <T, R> INodeExecutor<R> ofValues(T... values) {
         return ofValues(Arrays.asList(values));
     }
 
-    public static <R, T> INodeExecutor<R> ofValues(Collection<T> values) {
+    public static <T, R> INodeExecutor<R> ofValues(Collection<T> values) {
         return limited(1, (params, outputs) -> {
-            outputs.get(0).write(values);
+            outputs.get(0).writeMany((values instanceof List) ? (List)values : new LinkedList<>(values));
             return Optional.empty();
         });
     }
 
-    public static <R, T> INodeExecutor<R> iterate(T initial, UnaryOperator<T> mapper) {
+    public static <T, R> INodeExecutor<R> iterate(T initial, UnaryOperator<T> mapper) {
         return new IteratingSourceNode<>(initial, mapper);
     }
 
-    public static <R, T> INodeExecutor<R> iterateLimited(@Nonnegative int iterations,
+    public static <T, R> INodeExecutor<R> iterateLimited(@Nonnegative int iterations,
                                                          T initial, UnaryOperator<T> mapper) {
         return limited(iterations, iterate(initial, mapper));
     }

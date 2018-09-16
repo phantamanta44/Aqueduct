@@ -79,7 +79,7 @@ public abstract class DuctSocket<T, R> implements IOutput {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void write(List<Object> data) {
+    public void writeMany(List<Object> data) {
         enqueue((List<T>)data);
     }
 
