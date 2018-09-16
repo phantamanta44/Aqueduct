@@ -20,7 +20,7 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R, 
     private final PolicyDefinitions policies;
     private final Function<DuctGraph<R, E>, E> engineFactory;
     private final Collection<DuctNode<R>> nodes = new HashSet<>();
-    private final Collection<DuctEdge<?, R>> edges = new HashSet<>();
+    private final Collection<DuctEdge<?>> edges = new HashSet<>();
 
     private boolean finished = false;
 
@@ -38,10 +38,11 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R, 
     }
 
     @Override
-    public <T> IEdgeConfiguration createEdge(OutgoingSocket<T, R> source, IncomingSocket<T, R> destination) {
+    public <T> IEdgeConfiguration createEdge(OutgoingSocket<T> source, IncomingSocket<T> destination) {
         checkFinished();
+        //noinspection SuspiciousMethodCalls
         if (nodes.contains(source.getOwner()) && nodes.contains(destination.getOwner())) {
-            DuctEdge<T, R> edge = new DuctEdge<>(source, destination, policies);
+            DuctEdge<T> edge = new DuctEdge<>(source, destination, policies);
             edges.add(edge);
             return edge;
         } else {
@@ -68,7 +69,7 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R, 
         return Collections.unmodifiableCollection(nodes);
     }
 
-    public Collection<DuctEdge<?, R>> getEdges() {
+    public Collection<DuctEdge<?>> getEdges() {
         return Collections.unmodifiableCollection(edges);
     }
 

@@ -4,14 +4,14 @@ import xyz.phanta.aqueduct.engine.PolicyDefinitions;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
 
-public class DuctEdge<T, R> implements IEdgeConfiguration {
+public class DuctEdge<T> implements IEdgeConfiguration {
 
-    private final OutgoingSocket<T, R> source;
-    private final IncomingSocket<T, R> destination;
+    private final OutgoingSocket<T> source;
+    private final IncomingSocket<T> destination;
 
     private EdgeMode mode;
 
-    public DuctEdge(OutgoingSocket<T, R> source, IncomingSocket<T, R> destination, PolicyDefinitions policies) {
+    public DuctEdge(OutgoingSocket<T> source, IncomingSocket<T> destination, PolicyDefinitions policies) {
         this.source = source;
         this.destination = destination;
         this.mode = policies.getDefaultEdgeMode();
@@ -23,11 +23,11 @@ public class DuctEdge<T, R> implements IEdgeConfiguration {
         return this;
     }
 
-    public OutgoingSocket<T, R> getSource() {
+    public OutgoingSocket<T> getSource() {
         return source;
     }
 
-    public IncomingSocket<T, R> getDestination() {
+    public IncomingSocket<T> getDestination() {
         return destination;
     }
 
@@ -35,11 +35,11 @@ public class DuctEdge<T, R> implements IEdgeConfiguration {
         return mode;
     }
 
-    public boolean validateSource(OutgoingSocket<T, R> source) {
+    public boolean validateSource(OutgoingSocket<T> source) {
         return source == this.source;
     }
 
-    public boolean validateDestination(IncomingSocket<T, R> destination) {
+    public boolean validateDestination(IncomingSocket<T> destination) {
         return destination == this.destination;
     }
 

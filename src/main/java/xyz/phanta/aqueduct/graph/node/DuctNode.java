@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DuctNode<R> implements INodeConfiguration<R> {
+public class DuctNode<R> implements INodeConfiguration {
 
     private final INodeExecutor<R> executor;
-    private final List<IncomingSocket<?, R>> inputs = new ArrayList<>();
-    private final List<OutgoingSocket<?, R>> outputs = new ArrayList<>();
+    private final List<IncomingSocket<?>> inputs = new ArrayList<>();
+    private final List<OutgoingSocket<?>> outputs = new ArrayList<>();
 
     private Set<NodeAttribute> attribs;
 
@@ -30,15 +30,15 @@ public class DuctNode<R> implements INodeConfiguration<R> {
     }
 
     @Override
-    public <T> OutgoingSocket<T, R> openSocketOut(Class<T> dataType) {
-        OutgoingSocket<T, R> socket = new OutgoingSocket<>(dataType, this);
+    public <T> OutgoingSocket<T> openSocketOut(Class<T> dataType) {
+        OutgoingSocket<T> socket = new OutgoingSocket<>(dataType, this);
         outputs.add(socket);
         return socket;
     }
 
     @Override
-    public <T> IncomingSocket<T, R> openSocketIn(Class<T> dataType, int count) {
-        IncomingSocket<T, R> socket = new IncomingSocket<>(dataType, this, count);
+    public <T> IncomingSocket<T> openSocketIn(Class<T> dataType, int count) {
+        IncomingSocket<T> socket = new IncomingSocket<>(dataType, this, count);
         inputs.add(socket);
         return socket;
     }
@@ -47,11 +47,11 @@ public class DuctNode<R> implements INodeConfiguration<R> {
         return executor;
     }
 
-    public List<IncomingSocket<?, R>> getInputs() {
+    public List<IncomingSocket<?>> getInputs() {
         return inputs;
     }
 
-    public List<OutgoingSocket<?, R>> getOutputs() {
+    public List<OutgoingSocket<?>> getOutputs() {
         return outputs;
     }
 

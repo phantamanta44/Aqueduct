@@ -6,11 +6,11 @@ import xyz.phanta.aqueduct.graph.node.DuctNode;
 import javax.annotation.Nonnegative;
 import java.util.List;
 
-public class IncomingSocket<T, R> extends DuctSocket<T, R> {
+public class IncomingSocket<T> extends DuctSocket<T> {
 
     private final int count;
 
-    public IncomingSocket(Class<T> dataType, DuctNode<R> owner, @Nonnegative int count) {
+    public IncomingSocket(Class<T> dataType, DuctNode<?> owner, @Nonnegative int count) {
         super(dataType, owner);
         this.count = count;
     }
@@ -24,7 +24,7 @@ public class IncomingSocket<T, R> extends DuctSocket<T, R> {
     }
 
     @Override
-    boolean isEdgeValid(DuctEdge<T, R> edge) {
+    boolean isEdgeValid(DuctEdge<T> edge) {
         return edge.validateDestination(this);
     }
 

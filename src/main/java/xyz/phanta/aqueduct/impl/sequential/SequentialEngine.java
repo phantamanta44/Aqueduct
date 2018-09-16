@@ -46,9 +46,10 @@ public class SequentialEngine<R> implements IDuctEngine<R> {
                     }
                 }
             }
-            for (DuctEdge<?, R> edge : graph.getEdges()) {
+            for (DuctEdge<?> edge : graph.getEdges()) {
                 if (updateEdge(edge)) {
-                    dirtySet[inactiveSet].add(edge.getDestination().getOwner());
+                    //noinspection unchecked
+                    dirtySet[inactiveSet].add((DuctNode<R>)edge.getDestination().getOwner());
                 }
             }
             dirtySet[activeSet].clear();
@@ -56,7 +57,7 @@ public class SequentialEngine<R> implements IDuctEngine<R> {
         }
     }
     
-    private <T> boolean updateEdge(DuctEdge<T, R> edge) {
+    private <T> boolean updateEdge(DuctEdge<T> edge) {
         EdgeMode mode = edge.getEdgeMode();
         if (mode == EdgeMode.TRANSFER_ONE) {
             if (!edge.getSource().isDataAvailable()) return false;

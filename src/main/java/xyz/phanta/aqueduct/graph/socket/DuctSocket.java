@@ -9,15 +9,15 @@ import javax.annotation.Nonnegative;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public abstract class DuctSocket<T, R> implements IOutput {
+public abstract class DuctSocket<T> implements IOutput {
 
     private final Class<T> dataType;
-    private final DuctNode<R> owner;
-    private final Set<DuctEdge<T, R>> edges = new HashSet<>();
+    private final DuctNode<?> owner;
+    private final Set<DuctEdge<T>> edges = new HashSet<>();
     private final LinkedList<T> buffer = new LinkedList<>();
     private final ReentrantReadWriteLock bufferLock = new ReentrantReadWriteLock();
 
-    DuctSocket(Class<T> dataType, DuctNode<R> owner) {
+    DuctSocket(Class<T> dataType, DuctNode<?> owner) {
         this.dataType = dataType;
         this.owner = owner;
     }
@@ -26,15 +26,15 @@ public abstract class DuctSocket<T, R> implements IOutput {
         return dataType;
     }
 
-    public DuctNode<R> getOwner() {
+    public DuctNode<?> getOwner() {
         return owner;
     }
 
-    public Set<DuctEdge<T, R>> getEdges() {
+    public Set<DuctEdge<T>> getEdges() {
         return Collections.unmodifiableSet(edges);
     }
 
-    public void attachEdge(DuctEdge<T, R> edge) {
+    public void attachEdge(DuctEdge<T> edge) {
         if (isEdgeValid(edge)) {
             edges.add(edge);
         } else {
@@ -42,7 +42,7 @@ public abstract class DuctSocket<T, R> implements IOutput {
         }
     }
 
-    abstract boolean isEdgeValid(DuctEdge<T, R> edge);
+    abstract boolean isEdgeValid(DuctEdge<T> edge);
 
     public boolean isDataAvailable() {
         try {
