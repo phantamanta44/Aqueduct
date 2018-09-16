@@ -7,12 +7,12 @@ import xyz.phanta.aqueduct.graph.node.INodeExecutor;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
 
-public interface IGraphBuilder<R, E extends IDuctEngine<R>> {
+public interface IGraphBuilder<R> {
 
     INodeConfiguration createNode(INodeExecutor<R> executor);
 
     <T> IEdgeConfiguration createEdge(OutgoingSocket<T> source, IncomingSocket<T> destination);
 
-    E finish();
+    IDuctEngine<R> finish();
 
 }

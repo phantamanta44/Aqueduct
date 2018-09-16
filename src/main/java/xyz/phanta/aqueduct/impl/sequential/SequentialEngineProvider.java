@@ -10,9 +10,9 @@ public class SequentialEngineProvider implements IEngineProvider {
     public static final SequentialEngineProvider INSTANCE = new SequentialEngineProvider();
 
     @Override
-    public <R> IGraphBuilder<R, SequentialEngine<R>> beginBuilder() {
+    public <R> IGraphBuilder<R> beginBuilder() {
         PolicyDefinitions policies = new PolicyDefinitions();
-        return new DuctGraph<>(policies, graph -> new SequentialEngine<>(graph, policies));
+        return new DuctGraph<R, SequentialEngine<R>>(policies, graph -> new SequentialEngine<>(graph, policies));
     }
 
 }

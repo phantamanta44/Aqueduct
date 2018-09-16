@@ -4,6 +4,6 @@ import xyz.phanta.aqueduct.graph.IGraphBuilder;
 
 public interface IEngineProvider {
 
-    <R> IGraphBuilder<R, ? extends IDuctEngine<R>> beginBuilder();
+    <R> IGraphBuilder<R> beginBuilder();
 
 }

@@ -3,7 +3,6 @@ package xyz.phanta.aqueduct.test.base;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import xyz.phanta.aqueduct.engine.IDuctEngine;
 import xyz.phanta.aqueduct.graph.IGraphBuilder;
 import xyz.phanta.aqueduct.graph.node.INodeConfiguration;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseTests {
 
-    protected abstract <R> IGraphBuilder<R, ? extends IDuctEngine<R>> getGraphBuilder();
+    protected abstract <R> IGraphBuilder<R> getGraphBuilder();
 
     private static final String[] LOREM_IPSUM = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod",
@@ -32,7 +31,7 @@ public abstract class BaseTests {
     @DisplayName("Lorem ipusm")
     void testLoremIpsum() {
         doWithTimeout(() -> {
-            IGraphBuilder<String[], ? extends IDuctEngine<String[]>> builder = getGraphBuilder();
+            IGraphBuilder<String[]> builder = getGraphBuilder();
 
             // generates lorem ipsum
             INodeConfiguration gen = builder.createNode(SourceNodes.ofValues(LOREM_IPSUM));
@@ -53,7 +52,7 @@ public abstract class BaseTests {
     @DisplayName("Int sequence summation")
     void testIntSequence() {
         doWithTimeout(() -> {
-            IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
+            IGraphBuilder<Integer> builder = getGraphBuilder();
 
             // generates first 100 nonnegative ints
             INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
@@ -74,7 +73,7 @@ public abstract class BaseTests {
     @DisplayName("Int sequence mapping")
     void testIntSeqMapping() {
         doWithTimeout(() -> {
-            IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
+            IGraphBuilder<Integer> builder = getGraphBuilder();
 
             // generates first 100 nonnegative ints
             INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));

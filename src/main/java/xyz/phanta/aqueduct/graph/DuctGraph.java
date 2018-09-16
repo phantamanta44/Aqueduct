@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Function;
 
-public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R, E> {
+public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> {
 
     private final PolicyDefinitions policies;
     private final Function<DuctGraph<R, E>, E> engineFactory;
