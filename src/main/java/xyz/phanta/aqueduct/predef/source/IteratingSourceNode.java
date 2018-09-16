@@ -1,12 +1,13 @@
 package xyz.phanta.aqueduct.predef.source;
 
-import xyz.phanta.aqueduct.graph.node.INonTerminalExecutor;
+import xyz.phanta.aqueduct.graph.node.INodeExecutor;
 import xyz.phanta.aqueduct.graph.node.IOutput;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-public class IteratingSourceNode<T, R> implements INonTerminalExecutor<R> {
+public class IteratingSourceNode<T, R> implements INodeExecutor<R> {
 
     private final UnaryOperator<T> mapper;
 
@@ -18,9 +19,10 @@ public class IteratingSourceNode<T, R> implements INonTerminalExecutor<R> {
     }
 
     @Override
-    public void executeNonTerminal(List<List<?>> params, List<? extends IOutput> outputs) {
+    public Optional<R> execute(List<List<?>> params, List<? extends IOutput> outputs) {
         outputs.get(0).write(value);
         value = mapper.apply(value);
+        return Optional.empty();
     }
 
 }

@@ -1,11 +1,11 @@
 package xyz.phanta.aqueduct.predef.source;
 
 import xyz.phanta.aqueduct.graph.node.INodeExecutor;
-import xyz.phanta.aqueduct.graph.node.INonTerminalExecutor;
 
 import javax.annotation.Nonnegative;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public class SourceNodes {
@@ -14,16 +14,15 @@ public class SourceNodes {
         return new LimitedSourceNode<>(iterations, delegate);
     }
 
-    public static <R> INodeExecutor<R> limited(@Nonnegative int iterations, INonTerminalExecutor<R> delegate) {
-        return limited(iterations, (INodeExecutor<R>)delegate);
-    }
-
     public static <R, T> INodeExecutor<R> ofValues(T... values) {
         return ofValues(Arrays.asList(values));
     }
 
     public static <R, T> INodeExecutor<R> ofValues(Collection<T> values) {
-        return limited(1, (params, outputs) -> outputs.get(0).write(values));
+        return limited(1, (params, outputs) -> {
+            outputs.get(0).write(values);
+            return Optional.empty();
+        });
     }
 
     public static <R, T> INodeExecutor<R> iterate(T initial, UnaryOperator<T> mapper) {

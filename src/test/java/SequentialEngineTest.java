@@ -5,8 +5,8 @@ import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
 import xyz.phanta.aqueduct.impl.sequential.SequentialEngine;
 import xyz.phanta.aqueduct.impl.sequential.SequentialEngineProvider;
-import xyz.phanta.aqueduct.predef.terminal.TerminalNodes;
 import xyz.phanta.aqueduct.predef.source.SourceNodes;
+import xyz.phanta.aqueduct.predef.terminal.TerminalNodes;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -25,7 +25,10 @@ public class SequentialEngineTest {
 
         // consumes and collects ints
         INodeConfiguration<int[]> snk = builder.createNode(TerminalNodes.limited(100,
-                (params, outputs) -> System.out.println(params.get(0).get(0)),
+                (params, outputs) -> {
+                    System.out.println(params.get(0).get(0));
+                    return Optional.empty();
+                },
                 (params, outputs) -> Optional.of(new int[] { 48783 })));
         IncomingSocket<Integer, int[]> snkIn = snk.openSocketIn(Integer.class);
 
