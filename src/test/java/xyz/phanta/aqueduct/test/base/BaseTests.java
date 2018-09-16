@@ -2,6 +2,7 @@ package xyz.phanta.aqueduct.test.base;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import xyz.phanta.aqueduct.engine.IDuctEngine;
 import xyz.phanta.aqueduct.graph.IGraphBuilder;
 import xyz.phanta.aqueduct.graph.node.INodeConfiguration;
@@ -23,10 +24,14 @@ public abstract class BaseTests {
             "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua"
     };
 
+    private void doWithTimeout(Executable task) {
+        assertTimeout(Duration.ofSeconds(1), task);
+    }
+
     @Test
     @DisplayName("Lorem ipusm")
     void testLoremIpsum() {
-        assertTimeout(Duration.ofSeconds(1), () -> {
+        doWithTimeout(() -> {
             IGraphBuilder<String[], ? extends IDuctEngine<String[]>> builder = getGraphBuilder();
 
             // generates lorem ipsum
@@ -47,48 +52,52 @@ public abstract class BaseTests {
     @Test
     @DisplayName("Int sequence summation")
     void testIntSequence() {
-        IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
+        doWithTimeout(() -> {
+            IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
 
-        // generates first 100 nonnegative ints
-        INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
-        OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
+            // generates first 100 nonnegative ints
+            INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
+            OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
 
-        // consumes and sums 100 ints
-        INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
-                .mapToInt(i -> (Integer)i).sum()));
-        IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
+            // consumes and sums 100 ints
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
+                    .mapToInt(i -> (Integer)i).sum()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
 
-        builder.createEdge(genOut, snkIn);
+            builder.createEdge(genOut, snkIn);
 
-        assertEquals(4950, builder.finish().computeBlocking().intValue(), "Sum of first 100 nonnegative ints");
+            assertEquals(4950, builder.finish().computeBlocking().intValue(), "Sum of first 100 nonnegative ints");
+        });
     }
 
     @Test
     @DisplayName("Int sequence mapping")
     void testIntSeqMapping() {
-        IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
+        doWithTimeout(() -> {
+            IGraphBuilder<Integer, ? extends IDuctEngine<Integer>> builder = getGraphBuilder();
 
-        // generates first 100 nonnegative ints
-        INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
-        OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
+            // generates first 100 nonnegative ints
+            INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
+            OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
 
-        // processes ints by f(n) = n * 2 + 5
-        INodeConfiguration map = builder.createNode((params, outputs) -> {
-            outputs.get(0).write((Integer)params.get(0).get(0) * 2 + 5);
-            return Optional.empty();
+            // processes ints by f(n) = n * 2 + 5
+            INodeConfiguration map = builder.createNode((params, outputs) -> {
+                outputs.get(0).write((Integer)params.get(0).get(0) * 2 + 5);
+                return Optional.empty();
+            });
+            IncomingSocket<Integer> mapIn = map.openSocketIn(Integer.class);
+            OutgoingSocket<Integer> mapOut = map.openSocketOut(Integer.class);
+
+            // consumes and sums 100 ints
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
+                    .mapToInt(i -> (Integer)i).sum()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
+
+            builder.createEdge(genOut, mapIn);
+            builder.createEdge(mapOut, snkIn);
+
+            assertEquals(10400, builder.finish().computeBlocking().intValue(), "Sum of first 100 n*2+5 ints");
         });
-        IncomingSocket<Integer> mapIn = map.openSocketIn(Integer.class);
-        OutgoingSocket<Integer> mapOut = map.openSocketOut(Integer.class);
-
-        // consumes and sums 100 ints
-        INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
-                .mapToInt(i -> (Integer)i).sum()));
-        IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
-
-        builder.createEdge(genOut, mapIn);
-        builder.createEdge(mapOut, snkIn);
-
-        assertEquals(10400, builder.finish().computeBlocking().intValue(), "Sum of first 100 n*2+5 ints");
     }
 
     // TODO finish tests
