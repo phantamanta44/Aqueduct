@@ -34,9 +34,12 @@ public class SequentialEngine<R> implements IDuctEngine<R> {
             if (Thread.interrupted()) throw new ComputationFailedException("Interrupted!");
             for (DuctNode<R> node : dirtySet[activeSet]) {
                 if (node.hasAttrib(NodeAttribute.GREEDY)) {
-                    while (node.checkInputs()) {
-                        Optional<R> result = node.getExecutor().execute(node.dequeueInputs(), node.getOutputs());
-                        if (result.isPresent()) return result.get();
+                    if (node.checkInputs()) {
+                        do {
+                            Optional<R> result = node.getExecutor().execute(node.dequeueInputs(), node.getOutputs());
+                            if (result.isPresent()) return result.get();
+                        } while (node.checkInputs());
+                        dirtySet[inactiveSet].add(node);
                     }
                 } else {
                     if (node.checkInputs()) {

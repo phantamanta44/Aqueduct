@@ -11,6 +11,7 @@ import xyz.phanta.aqueduct.predef.source.SourceNodes;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,14 +19,14 @@ public abstract class BaseTests {
 
     protected abstract <R> IGraphBuilder<R> getGraphBuilder();
 
+    private void doWithTimeout(Executable task) {
+        assertTimeoutPreemptively(Duration.ofSeconds(1), task);
+    }
+
     private static final String[] LOREM_IPSUM = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod",
             "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua"
     };
-
-    private void doWithTimeout(Executable task) {
-        assertTimeout(Duration.ofSeconds(1), task);
-    }
 
     @Test
     @DisplayName("Lorem ipusm")
@@ -99,6 +100,111 @@ public abstract class BaseTests {
         });
     }
 
-    // TODO finish tests
+    private static final int[] INT_TRIPLE_SUMS = IntStream.range(0, 34).map(i -> 9 * i + 3).toArray();
+
+    @Test
+    @DisplayName("Int triple accumulation")
+    void testTripleAccumulation() {
+        doWithTimeout(() -> {
+            IGraphBuilder<int[]> builder = getGraphBuilder();
+
+            // generates first 102 nonnegative ints
+            INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 102));
+            OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
+
+            // accumulates and sums every 3 ints
+            INodeConfiguration acc = builder.createNode((params, outputs) -> {
+                outputs.get(0).write(params.get(0).stream()
+                        .mapToInt(i -> (Integer)i).sum());
+                return Optional.empty();
+            });
+            IncomingSocket<Integer> accIn = acc.openSocketIn(Integer.class, 3);
+            OutgoingSocket<Integer> accOut = acc.openSocketOut(Integer.class);
+
+            // collects ints into an array
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
+                    .mapToInt(i -> (Integer)i).toArray()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 34);
+
+            builder.createEdge(genOut, accIn);
+            builder.createEdge(accOut, snkIn);
+
+            assertArrayEquals(INT_TRIPLE_SUMS, builder.finish().computeBlocking(), "Set of first 34 int triple sums");
+        });
+    }
+
+    private static final int[] FIRST_50_ODDS = IntStream.range(0, 50).map(i -> i * 2 + 1).toArray();
+
+    @Test
+    @DisplayName("Stream filtering")
+    void testFilter() {
+        doWithTimeout(() -> {
+            IGraphBuilder<int[]> builder = getGraphBuilder();
+
+            // generates first 100 nonegative ints
+            INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
+            OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
+
+            // filters out even ints
+            INodeConfiguration acc = builder.createNode((params, outputs) -> {
+                int input = (Integer)params.get(0).get(0);
+                if ((input % 2) == 1) outputs.get(0).write(input);
+                return Optional.empty();
+            });
+            IncomingSocket<Integer> accIn = acc.openSocketIn(Integer.class);
+            OutgoingSocket<Integer> accOut = acc.openSocketOut(Integer.class);
+
+            // collects ints into an array
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
+                    .mapToInt(i -> (Integer)i).toArray()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 50);
+
+            builder.createEdge(genOut, accIn);
+            builder.createEdge(accOut, snkIn);
+
+            assertArrayEquals(FIRST_50_ODDS, builder.finish().computeBlocking(), "Set of first 34 int triple sums");
+        });
+    }
+
+    private static final int[] FIRST_100_INTS = IntStream.range(0, 100).toArray();
+
+    @Test
+    @DisplayName("Stream zipping")
+    void testZip() {
+        doWithTimeout(() -> {
+            IGraphBuilder<int[]> builder = getGraphBuilder();
+
+            // generates even integers < 100
+            INodeConfiguration genEven = builder.createNode(SourceNodes.intsLimited(0, 100, 2));
+            OutgoingSocket<Integer> genEvenOut = genEven.openSocketOut(Integer.class);
+
+            // generates odd integers < 100
+            INodeConfiguration genOdd = builder.createNode(SourceNodes.intsLimited(1, 100, 2));
+            OutgoingSocket<Integer> genOddOut = genOdd.openSocketOut(Integer.class);
+
+            // zips two incoming streams
+            INodeConfiguration zip = builder.createNode((params, outputs) -> {
+                outputs.get(0).write(params.get(0).get(0));
+                outputs.get(0).write(params.get(1).get(0));
+                return Optional.empty();
+            });
+            IncomingSocket<Integer> zipInLeft = zip.openSocketIn(Integer.class);
+            IncomingSocket<Integer> zipInRight = zip.openSocketIn(Integer.class);
+            OutgoingSocket<Integer> zipOut = zip.openSocketOut(Integer.class);
+
+            // collects ints into an array
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.get(0).stream()
+                    .mapToInt(i -> (Integer)i).toArray()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
+
+            builder.createEdge(genEvenOut, zipInLeft);
+            builder.createEdge(genOddOut, zipInRight);
+            builder.createEdge(zipOut, snkIn);
+
+            assertArrayEquals(FIRST_100_INTS, builder.finish().computeBlocking());
+        });
+    }
+
+    // TODO even more tests
 
 }

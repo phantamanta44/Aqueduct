@@ -74,12 +74,20 @@ public abstract class DuctSocket<T> implements IOutput {
     @SuppressWarnings("unchecked")
     @Override
     public void write(Object datum) {
+        if (!dataType.isInstance(datum)) {
+            throw new ClassCastException(String.format("%s is not a %s!", datum.getClass(), dataType));
+        }
         enqueue((T)datum);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void writeMany(List<Object> data) {
+        for (Object datum : data) {
+            if (!dataType.isInstance(datum)) {
+                throw new ClassCastException(String.format("%s is not a %s!", datum.getClass(), dataType));
+            }
+        }
         enqueue((List<T>)data);
     }
 
