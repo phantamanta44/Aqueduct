@@ -39,8 +39,8 @@ public abstract class BaseTests {
             OutgoingSocket<String> genOut = gen.openSocketOut(String.class);
 
             // consumes and collects strings to an array
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .map(s -> (String)s).toArray(String[]::new)));
+            INodeConfiguration snk = builder.createNode(
+                    (params, outputs) -> Optional.of(params.stream().toArray(String[]::new)));
             IncomingSocket<String> snkIn = snk.openSocketIn(String.class, LOREM_IPSUM.length);
 
             builder.createEdge(genOut, snkIn);
@@ -60,8 +60,7 @@ public abstract class BaseTests {
             OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
 
             // consumes and sums 100 ints
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .mapToInt(i -> (Integer)i).sum()));
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.iStream().sum()));
             IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
 
             builder.createEdge(genOut, snkIn);
@@ -82,15 +81,14 @@ public abstract class BaseTests {
 
             // processes ints by f(n) = n * 2 + 5
             INodeConfiguration map = builder.createNode((params, outputs) -> {
-                outputs.put((Integer)params.val() * 2 + 5);
+                outputs.put(params.iVal() * 2 + 5);
                 return Optional.empty();
             });
             IncomingSocket<Integer> mapIn = map.openSocketIn(Integer.class);
             OutgoingSocket<Integer> mapOut = map.openSocketOut(Integer.class);
 
             // consumes and sums 100 ints
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .mapToInt(i -> (Integer)i).sum()));
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.iStream().sum()));
             IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
 
             builder.createEdge(genOut, mapIn);
@@ -114,15 +112,14 @@ public abstract class BaseTests {
 
             // accumulates and sums every 3 ints
             INodeConfiguration acc = builder.createNode((params, outputs) -> {
-                outputs.put(params.vals().stream().mapToInt(i -> (Integer)i).sum());
+                outputs.put(params.iStream().sum());
                 return Optional.empty();
             });
             IncomingSocket<Integer> accIn = acc.openSocketIn(Integer.class, 3);
             OutgoingSocket<Integer> accOut = acc.openSocketOut(Integer.class);
 
             // collects ints into an array
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .mapToInt(i -> (Integer)i).toArray()));
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.iStream().toArray()));
             IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 34);
 
             builder.createEdge(genOut, accIn);
@@ -146,7 +143,7 @@ public abstract class BaseTests {
 
             // filters out even ints
             INodeConfiguration acc = builder.createNode((params, outputs) -> {
-                int input = params.val();
+                int input = params.iVal();
                 if ((input % 2) == 1) outputs.put(input);
                 return Optional.empty();
             });
@@ -154,8 +151,7 @@ public abstract class BaseTests {
             OutgoingSocket<Integer> accOut = acc.openSocketOut(Integer.class);
 
             // collects ints into an array
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .mapToInt(i -> (Integer)i).toArray()));
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.iStream().toArray()));
             IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 50);
 
             builder.createEdge(genOut, accIn);
@@ -192,8 +188,7 @@ public abstract class BaseTests {
             OutgoingSocket<Integer> zipOut = zip.openSocketOut(Integer.class);
 
             // collects ints into an array
-            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.vals().stream()
-                    .mapToInt(i -> (Integer)i).toArray()));
+            INodeConfiguration snk = builder.createNode((params, outputs) -> Optional.of(params.iStream().toArray()));
             IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
 
             builder.createEdge(genEvenOut, zipInLeft);
