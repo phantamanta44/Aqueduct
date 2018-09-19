@@ -9,6 +9,10 @@ public class SequentialEngineProvider implements IEngineProvider {
 
     public static final SequentialEngineProvider INSTANCE = new SequentialEngineProvider();
 
+    private SequentialEngineProvider() {
+        // NO-OP
+    }
+
     @Override
     public <R> IGraphBuilder<R> beginBuilder() {
         PolicyDefinitions policies = new PolicyDefinitions();

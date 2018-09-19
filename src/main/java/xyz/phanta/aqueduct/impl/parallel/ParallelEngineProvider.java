@@ -9,6 +9,10 @@ public class ParallelEngineProvider implements IEngineProvider {
 
     public static final ParallelEngineProvider INSTANCE = new ParallelEngineProvider();
 
+    private ParallelEngineProvider() {
+        // NO-OP
+    }
+
     @Override
     public <R> IGraphBuilder<R> beginBuilder() {
         PolicyDefinitions policies = new PolicyDefinitions();
