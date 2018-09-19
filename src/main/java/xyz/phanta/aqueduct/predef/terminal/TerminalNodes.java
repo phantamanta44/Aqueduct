@@ -1,6 +1,6 @@
 package xyz.phanta.aqueduct.predef.terminal;
 
-import xyz.phanta.aqueduct.graph.node.INodeExecutor;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
 
 import javax.annotation.Nonnegative;
 

@@ -1,10 +1,10 @@
 package xyz.phanta.aqueduct.predef.source;
 
-import xyz.phanta.aqueduct.graph.node.INodeExecutor;
-import xyz.phanta.aqueduct.graph.node.IOutput;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
+import xyz.phanta.aqueduct.execution.Outputs;
+import xyz.phanta.aqueduct.execution.Parameters;
 
 import javax.annotation.Nonnegative;
-import java.util.List;
 import java.util.Optional;
 
 public class LimitedSourceNode<R> implements INodeExecutor<R> {
@@ -20,7 +20,7 @@ public class LimitedSourceNode<R> implements INodeExecutor<R> {
     }
 
     @Override
-    public Optional<R> execute(List<List<?>> params, List<? extends IOutput> outputs) {
+    public Optional<R> execute(Parameters params, Outputs outputs) {
         if (iterations > 0) {
             --iterations;
             return delegate.execute(params, outputs);

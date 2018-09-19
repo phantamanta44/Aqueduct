@@ -1,6 +1,6 @@
 package xyz.phanta.aqueduct.predef.source;
 
-import xyz.phanta.aqueduct.graph.node.INodeExecutor;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
 
 import javax.annotation.Nonnegative;
 import java.util.*;
@@ -18,7 +18,7 @@ public class SourceNodes {
 
     public static <T, R> INodeExecutor<R> ofValues(Collection<T> values) {
         return limited(1, (params, outputs) -> {
-            outputs.get(0).writeMany((values instanceof List) ? (List)values : new LinkedList<>(values));
+            outputs.putMany((values instanceof List) ? (List)values : new LinkedList<>(values));
             return Optional.empty();
         });
     }

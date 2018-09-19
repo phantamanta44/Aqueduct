@@ -1,6 +1,7 @@
 package xyz.phanta.aqueduct.graph.node;
 
 import xyz.phanta.aqueduct.engine.PolicyDefinitions;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
 

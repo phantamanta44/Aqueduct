@@ -1,9 +1,9 @@
 package xyz.phanta.aqueduct.predef.source;
 
-import xyz.phanta.aqueduct.graph.node.INodeExecutor;
-import xyz.phanta.aqueduct.graph.node.IOutput;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
+import xyz.phanta.aqueduct.execution.Outputs;
+import xyz.phanta.aqueduct.execution.Parameters;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -19,8 +19,8 @@ public class IteratingSourceNode<T, R> implements INodeExecutor<R> {
     }
 
     @Override
-    public Optional<R> execute(List<List<?>> params, List<? extends IOutput> outputs) {
-        outputs.get(0).write(value);
+    public Optional<R> execute(Parameters params, Outputs outputs) {
+        outputs.put(value);
         value = mapper.apply(value);
         return Optional.empty();
     }

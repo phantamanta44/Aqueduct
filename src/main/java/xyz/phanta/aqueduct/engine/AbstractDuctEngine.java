@@ -1,5 +1,7 @@
 package xyz.phanta.aqueduct.engine;
 
+import xyz.phanta.aqueduct.execution.Outputs;
+import xyz.phanta.aqueduct.execution.Parameters;
 import xyz.phanta.aqueduct.graph.edge.DuctEdge;
 import xyz.phanta.aqueduct.graph.edge.EdgeMode;
 import xyz.phanta.aqueduct.graph.node.DuctNode;
@@ -28,12 +30,14 @@ public abstract class AbstractDuctEngine<R> implements IDuctEngine<R> {
         if (node.checkInputs()) {
             if (node.hasAttrib(NodeAttribute.GREEDY)) {
                 do {
-                    Optional<R> result = node.getExecutor().execute(node.dequeueInputs(), node.getOutputs());
+                    Optional<R> result = node.getExecutor().execute(
+                            new Parameters(node.dequeueInputs()), new Outputs(node.getOutputs()));
                     if (result.isPresent()) return result;
                 } while (node.checkInputs());
                 return Optional.empty();
             } else {
-                return node.getExecutor().execute(node.dequeueInputs(), node.getOutputs());
+                return node.getExecutor().execute(
+                        new Parameters(node.dequeueInputs()), new Outputs(node.getOutputs()));
             }
         }
         //noinspection OptionalAssignedToNull
