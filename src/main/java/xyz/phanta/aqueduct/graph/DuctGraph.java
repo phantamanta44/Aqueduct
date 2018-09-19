@@ -43,6 +43,8 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> 
         //noinspection SuspiciousMethodCalls
         if (nodes.contains(source.getOwner()) && nodes.contains(destination.getOwner())) {
             DuctEdge<T> edge = new DuctEdge<>(source, destination, policies);
+            source.attachEdge(edge);
+            destination.attachEdge(edge);
             edges.add(edge);
             return edge;
         } else {
