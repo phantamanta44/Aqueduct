@@ -1,20 +1,11 @@
 package xyz.phanta.aqueduct.graph.node;
 
-import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
-import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
+import xyz.phanta.aqueduct.graph.builder.IConnectable;
 
 import java.util.Set;
 
-public interface INodeConfiguration {
+public interface INodeConfiguration extends IConnectable {
 
     INodeConfiguration withAttribs(Set<NodeAttribute> attribs);
-
-    <T> OutgoingSocket<T> openSocketOut(Class<T> dataType);
-
-    <T> IncomingSocket<T> openSocketIn(Class<T> dataType, int count);
-
-    default <T> IncomingSocket<T> openSocketIn(Class<T> dataType) {
-        return openSocketIn(dataType, 1);
-    }
 
 }

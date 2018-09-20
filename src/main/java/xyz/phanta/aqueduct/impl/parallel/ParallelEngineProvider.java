@@ -3,7 +3,7 @@ package xyz.phanta.aqueduct.impl.parallel;
 import xyz.phanta.aqueduct.engine.IEngineProvider;
 import xyz.phanta.aqueduct.engine.PolicyDefinitions;
 import xyz.phanta.aqueduct.graph.DuctGraph;
-import xyz.phanta.aqueduct.graph.IGraphBuilder;
+import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 
 public class ParallelEngineProvider implements IEngineProvider {
 

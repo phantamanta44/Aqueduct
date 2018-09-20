@@ -3,7 +3,8 @@ package xyz.phanta.aqueduct.test.base;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import xyz.phanta.aqueduct.graph.IGraphBuilder;
+import xyz.phanta.aqueduct.graph.builder.IConnectable;
+import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 import xyz.phanta.aqueduct.graph.node.INodeConfiguration;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
@@ -93,6 +94,38 @@ public abstract class BaseTests {
             builder.createEdge(mapOut, snkIn);
 
             assertEquals(10400, builder.finish().computeBlocking().intValue(), "Sum of first 100 n*2+5 ints");
+        });
+    }
+
+    private static final int[] NODE_CHAIN_RESULT = IntStream.range(0, 100)
+            .map(i -> i + 1).map(i -> i * i).map(i -> i * 9).map(i -> i + 3).toArray();
+
+    @Test
+    @DisplayName("Processing node chain")
+    void testNodeChain() {
+        doWithTimeout(() -> {
+            IGraphBuilder<int[]> builder = getGraphBuilder();
+
+            // generates first 100 nonnegative ints
+            INodeConfiguration gen = builder.createNode(SourceNodes.intsLimited(0, 100));
+            OutgoingSocket<Integer> genOut = gen.openSocketOut(Integer.class);
+
+            IConnectable map = builder.createChain(ProcessNodes.mapRaw(p -> p.iVal() + 1))
+                    .then(ProcessNodes.mapRaw(p -> p.iVal() * p.iVal()))
+                    .then(ProcessNodes.mapRaw(p -> p.iVal() * 9))
+                    .then(ProcessNodes.mapRaw(p -> p.iVal() + 3))
+                    .finish();
+            IncomingSocket<Integer> mapIn = map.openSocketIn(Integer.class);
+            OutgoingSocket<Integer> mapOut = map.openSocketOut(Integer.class);
+
+            // collects ints into an array
+            INodeConfiguration snk = builder.createNode(TerminalNodes.mapRaw(p -> p.iStream().toArray()));
+            IncomingSocket<Integer> snkIn = snk.openSocketIn(Integer.class, 100);
+
+            builder.createEdge(genOut, mapIn);
+            builder.createEdge(mapOut, snkIn);
+
+            assertArrayEquals(NODE_CHAIN_RESULT, builder.finish().computeBlocking(), "First 100 9*(n+1)^2+3 ints");
         });
     }
 

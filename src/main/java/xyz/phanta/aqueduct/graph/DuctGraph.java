@@ -2,17 +2,21 @@ package xyz.phanta.aqueduct.graph;
 
 import xyz.phanta.aqueduct.engine.IDuctEngine;
 import xyz.phanta.aqueduct.engine.PolicyDefinitions;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
+import xyz.phanta.aqueduct.graph.builder.IChainBuilder;
+import xyz.phanta.aqueduct.graph.builder.IConnectable;
+import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 import xyz.phanta.aqueduct.graph.edge.DuctEdge;
 import xyz.phanta.aqueduct.graph.edge.IEdgeConfiguration;
 import xyz.phanta.aqueduct.graph.node.DuctNode;
 import xyz.phanta.aqueduct.graph.node.INodeConfiguration;
-import xyz.phanta.aqueduct.execution.INodeExecutor;
 import xyz.phanta.aqueduct.graph.socket.IncomingSocket;
 import xyz.phanta.aqueduct.graph.socket.OutgoingSocket;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> {
@@ -30,7 +34,7 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> 
     }
 
     @Override
-    public INodeConfiguration createNode(INodeExecutor<R> executor) {
+    public DuctNode<R> createNode(INodeExecutor<R> executor) {
         checkFinished();
         DuctNode<R> node = new DuctNode<>(executor, policies);
         nodes.add(node);
@@ -50,6 +54,16 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> 
         } else {
             throw new IllegalArgumentException("At least one node not owned by graph!");
         }
+    }
+
+    @Override
+    public IChainBuilder<R> createChain(INodeExecutor<R> first) {
+        return new NodeChain(first);
+    }
+
+    @Override
+    public IChainBuilder<R> createChain(INodeExecutor<R> first, Consumer<INodeConfiguration> configurator) {
+        return new NodeChain(first, configurator);
     }
 
     @Override
@@ -73,6 +87,77 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> 
 
     public Collection<DuctEdge<?>> getEdges() {
         return Collections.unmodifiableCollection(edges);
+    }
+
+    private class NodeChain implements IChainBuilder<R>, IConnectable {
+
+        private final DuctNode<R> head;
+
+        private DuctNode<R> tail;
+
+        public NodeChain(INodeExecutor<R> first) {
+            this.head = this.tail = createNode(first);
+        }
+
+        public NodeChain(INodeExecutor<R> first, Consumer<INodeConfiguration> configurator) {
+            this(first);
+            configurator.accept(this.head);
+        }
+
+        @Override
+        public IChainBuilder<R> then(INodeExecutor<R> executor) {
+            DuctNode<R> node = createNode(executor);
+            createEdge(tail.openSocketOut(Object.class), node.openSocketIn(Object.class));
+            tail = node;
+            return this;
+        }
+
+        @Override
+        public IChainBuilder<R> then(INodeExecutor<R> executor, Consumer<INodeConfiguration> configurator) {
+            DuctNode<R> node = createNode(executor);
+            configurator.accept(node);
+            createEdge(tail.openSocketOut(Object.class), node.openSocketIn(Object.class));
+            tail = node;
+            return this;
+        }
+
+        @Override
+        public IChainBuilder<R> thenEdge(INodeExecutor<R> executor, Consumer<IEdgeConfiguration> configurator) {
+            DuctNode<R> node = createNode(executor);
+            configurator.accept(createEdge(tail.openSocketOut(Object.class), node.openSocketIn(Object.class)));
+            tail = node;
+            return this;
+        }
+
+        @Override
+        public IChainBuilder<R> thenEdge(INodeExecutor<R> executor, Consumer<IEdgeConfiguration> edgeConfigurator, Consumer<INodeConfiguration> nodeConfigurator) {
+            DuctNode<R> node = createNode(executor);
+            nodeConfigurator.accept(node);
+            edgeConfigurator.accept(createEdge(tail.openSocketOut(Object.class), node.openSocketIn(Object.class)));
+            tail = node;
+            return this;
+        }
+
+        @Override
+        public IConnectable finish() {
+            return this;
+        }
+
+        @Override
+        public <T> OutgoingSocket<T> openSocketOut(Class<T> dataType) {
+            return tail.openSocketOut(dataType);
+        }
+
+        @Override
+        public <T> IncomingSocket<T> openSocketIn(Class<T> dataType, int count) {
+            return head.openSocketIn(dataType, count);
+        }
+
+        @Override
+        public <T> IncomingSocket<T> openSocketIn(Class<T> dataType) {
+            return head.openSocketIn(dataType);
+        }
+
     }
 
 }

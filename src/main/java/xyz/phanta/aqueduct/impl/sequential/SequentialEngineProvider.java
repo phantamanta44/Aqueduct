@@ -3,7 +3,7 @@ package xyz.phanta.aqueduct.impl.sequential;
 import xyz.phanta.aqueduct.engine.IEngineProvider;
 import xyz.phanta.aqueduct.engine.PolicyDefinitions;
 import xyz.phanta.aqueduct.graph.DuctGraph;
-import xyz.phanta.aqueduct.graph.IGraphBuilder;
+import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 
 public class SequentialEngineProvider implements IEngineProvider {
 

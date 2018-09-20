@@ -1,6 +1,6 @@
 package xyz.phanta.aqueduct.test;
 
-import xyz.phanta.aqueduct.graph.IGraphBuilder;
+import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 import xyz.phanta.aqueduct.impl.parallel.ParallelEngineProvider;
 import xyz.phanta.aqueduct.test.base.BaseTests;
 
