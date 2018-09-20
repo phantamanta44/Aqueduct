@@ -5,7 +5,6 @@ import xyz.phanta.aqueduct.graph.edge.DuctEdge;
 import xyz.phanta.aqueduct.graph.node.DuctNode;
 import xyz.phanta.aqueduct.graph.node.IOutput;
 
-import javax.annotation.Nonnegative;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -57,7 +56,6 @@ public abstract class DuctSocket<T> implements IOutput {
         }
     }
 
-    @Nonnegative
     public int getAvailableDataCount() {
         try {
             bufferLock.writeLock().lockInterruptibly();
@@ -82,7 +80,7 @@ public abstract class DuctSocket<T> implements IOutput {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void writeMany(List<Object> data) {
+    public void writeMany(List<?> data) {
         for (Object datum : data) {
             if (!dataType.isInstance(datum)) {
                 throw new ClassCastException(String.format("%s is not a %s!", datum.getClass(), dataType));
@@ -146,7 +144,7 @@ public abstract class DuctSocket<T> implements IOutput {
         }
     }
 
-    public List<T> dequeueSome(@Nonnegative int count) {
+    public List<T> dequeueSome(int count) {
         try {
             bufferLock.writeLock().lockInterruptibly();
             try {

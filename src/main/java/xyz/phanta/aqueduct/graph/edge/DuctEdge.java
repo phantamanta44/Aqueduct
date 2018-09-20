@@ -12,6 +12,10 @@ public class DuctEdge<T> implements IEdgeConfiguration {
     private EdgeMode mode;
 
     public DuctEdge(OutgoingSocket<T> source, IncomingSocket<T> destination, PolicyDefinitions policies) {
+        if (!destination.getDataType().isAssignableFrom(source.getDataType())) {
+            throw new ClassCastException(String.format("%s socket cannot accept %s!",
+                    destination.getDataType(), source.getDataType()));
+        }
         this.source = source;
         this.destination = destination;
         this.mode = policies.getDefaultEdgeMode();

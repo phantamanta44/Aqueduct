@@ -2,6 +2,7 @@ package xyz.phanta.aqueduct.predef.processing;
 
 import xyz.phanta.aqueduct.execution.INodeExecutor;
 import xyz.phanta.aqueduct.execution.Parameters;
+import xyz.phanta.aqueduct.util.DistribStrategy;
 
 import java.util.Iterator;
 import java.util.List;
@@ -121,6 +122,40 @@ public class ProcessNodes {
             outputs.put(params.val());
             return Optional.empty();
         };
+    }
+
+    // stateful stuff
+
+    public static <R> INodeExecutor<R> counter() {
+        return new CountingProcessingNode<>();
+    }
+
+    public static <R> INodeExecutor<R> distinct() {
+        return new DistinctProcessingNode<>();
+    }
+
+    public static <R> INodeExecutor<R> distinctAdj() {
+        return new AdjacentDistinctProcessingNode<>();
+    }
+
+    public static <R> INodeExecutor<R> distribute(DistribStrategy strategy) {
+        return new DistributingProcessingNode<>(strategy);
+    }
+
+    public static <R> INodeExecutor<R> nth(int index) {
+        return new NthElementProcessingNode<>(index);
+    }
+
+    public static <R> INodeExecutor<R> everyNth(int index) {
+        return new EveryNthElementProcessingNode<>(index);
+    }
+
+    public static <R> INodeExecutor<R> skip(int count) {
+        return new SkippingProcessingNode<>(count);
+    }
+
+    public static <R> INodeExecutor<R> limit(int count) {
+        return new LimitedProcessingNode<>(count);
     }
 
 }

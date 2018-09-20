@@ -3,7 +3,6 @@ package xyz.phanta.aqueduct.predef.terminal;
 import xyz.phanta.aqueduct.execution.INodeExecutor;
 import xyz.phanta.aqueduct.execution.Parameters;
 
-import javax.annotation.Nonnegative;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -11,7 +10,7 @@ import java.util.function.Predicate;
 
 public class TerminalNodes {
 
-    public static <R> INodeExecutor<R> limited(@Nonnegative int iterations,
+    public static <R> INodeExecutor<R> limited(int iterations,
                                                INodeExecutor<R> delegate, INodeExecutor<R> finished) {
         return new LimitedTerminalNode<>(iterations, delegate, finished);
     }

@@ -15,6 +15,10 @@ public class Parameters {
         this.params = params;
     }
 
+    public List<List<?>> getBacking() {
+        return params;
+    }
+
     // param stream
     
     public <T> List<T> at(int index) {

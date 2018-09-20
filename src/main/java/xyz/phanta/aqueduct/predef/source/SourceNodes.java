@@ -2,14 +2,13 @@ package xyz.phanta.aqueduct.predef.source;
 
 import xyz.phanta.aqueduct.execution.INodeExecutor;
 
-import javax.annotation.Nonnegative;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class SourceNodes {
 
-    public static <R> INodeExecutor<R> limited(@Nonnegative int iterations, INodeExecutor<R> delegate) {
+    public static <R> INodeExecutor<R> limited(int iterations, INodeExecutor<R> delegate) {
         return new LimitedSourceNode<>(iterations, delegate);
     }
 
@@ -28,7 +27,7 @@ public class SourceNodes {
         return new IteratingSourceNode<>(initial, mapper);
     }
 
-    public static <T, R> INodeExecutor<R> iterateLimited(@Nonnegative int iterations,
+    public static <T, R> INodeExecutor<R> iterateLimited(int iterations,
                                                          T initial, UnaryOperator<T> mapper) {
         return limited(iterations, iterate(initial, mapper));
     }
@@ -40,11 +39,11 @@ public class SourceNodes {
         };
     }
 
-    public static <T, R> INodeExecutor generateLimited(@Nonnegative int iterations, Supplier<T> supplier) {
+    public static <T, R> INodeExecutor generateLimited(int iterations, Supplier<T> supplier) {
         return limited(iterations, generate(supplier));
     }
 
-    public static <R> INodeExecutor<R> ints(int from, @Nonnegative int step) {
+    public static <R> INodeExecutor<R> ints(int from, int step) {
         return iterate(from, i -> i + step);
     }
 
@@ -52,7 +51,7 @@ public class SourceNodes {
         return ints(from, 1);
     }
 
-    public static <R> INodeExecutor<R> intsLimited(int from, int to, @Nonnegative int step) {
+    public static <R> INodeExecutor<R> intsLimited(int from, int to, int step) {
         return new IntIteratingSourceNode<>(from, to, step);
     }
 

@@ -1,13 +1,11 @@
 package xyz.phanta.aqueduct.graph.edge;
 
-import javax.annotation.Nonnegative;
-
 public abstract class EdgeMode {
     
     public static final EdgeMode TRANSFER_ONE = new EdgeModeTransferOne();
     public static final EdgeMode TRANSFER_ALL = new EdgeModeTransferAll();
 
-    public static EdgeMode transferSome(@Nonnegative int count) {
+    public static EdgeMode transferSome(int count) {
         return new EdgeModeTransferSome(count);
     }
 
@@ -15,12 +13,10 @@ public abstract class EdgeMode {
         // NO-OP
     }
 
-    @Nonnegative
     public abstract int getCount();
     
     private static class EdgeModeTransferOne extends EdgeMode {
 
-        @Nonnegative
         @Override
         public int getCount() {
             return 1;
@@ -30,14 +26,12 @@ public abstract class EdgeMode {
     
     private static class EdgeModeTransferSome extends EdgeMode {
 
-        @Nonnegative
         private final int count;
         
-        EdgeModeTransferSome(@Nonnegative int count) {
+        EdgeModeTransferSome(int count) {
             this.count = count;
         }
 
-        @Nonnegative
         @Override
         public int getCount() {
             return count;
@@ -47,7 +41,6 @@ public abstract class EdgeMode {
 
     private static class EdgeModeTransferAll extends EdgeMode {
 
-        @Nonnegative
         @Override
         public int getCount() {
             return Integer.MAX_VALUE;

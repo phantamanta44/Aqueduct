@@ -12,15 +12,19 @@ public class Outputs {
         this.outputs = outputs;
     }
 
+    public List<? extends IOutput> getBacking() {
+        return outputs;
+    }
+
     public IOutput at(int index) {
         return outputs.get(index);
     }
 
-    public void putMany(int index, List<Object> values) {
+    public void putMany(int index, List<?> values) {
         at(index).writeMany(values);
     }
 
-    public void putMany(List<Object> values) {
+    public void putMany(List<?> values) {
         putMany(0, values);
     }
 
