@@ -6,13 +6,13 @@ import xyz.phanta.aqueduct.execution.Parameters;
 
 import java.util.Optional;
 
-public class EveryNthElementProcessingNode<R> implements INodeExecutor<R> {
+class EveryNthElementProcessingNode<R> implements INodeExecutor<R> {
 
     private final int index;
 
     private int counter = 0;
 
-    public EveryNthElementProcessingNode(int index) {
+    EveryNthElementProcessingNode(int index) {
         this.index = index;
     }
 

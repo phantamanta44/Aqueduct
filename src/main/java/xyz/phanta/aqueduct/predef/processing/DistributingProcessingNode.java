@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class DistributingProcessingNode<R> implements INodeExecutor<R> {
+class DistributingProcessingNode<R> implements INodeExecutor<R> {
 
     private final Distributor distrib;
 
-    public DistributingProcessingNode(DistribStrategy strategy) {
+    DistributingProcessingNode(DistribStrategy strategy) {
         Distributor distrib;
         switch (strategy) {
             case ROUND_ROBIN:

@@ -6,13 +6,13 @@ import xyz.phanta.aqueduct.execution.Parameters;
 
 import java.util.Optional;
 
-public class LimitedSourceNode<R> implements INodeExecutor<R> {
+class LimitedSourceNode<R> implements INodeExecutor<R> {
 
     private final INodeExecutor<R> delegate;
 
     private int iterations;
 
-    public LimitedSourceNode(int iterations, INodeExecutor<R> delegate) {
+    LimitedSourceNode(int iterations, INodeExecutor<R> delegate) {
         this.delegate = delegate;
         this.iterations = iterations;
     }

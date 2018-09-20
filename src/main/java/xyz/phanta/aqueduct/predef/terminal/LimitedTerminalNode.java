@@ -7,14 +7,14 @@ import xyz.phanta.aqueduct.execution.Parameters;
 
 import java.util.Optional;
 
-public class LimitedTerminalNode<R> implements INodeExecutor<R> {
+class LimitedTerminalNode<R> implements INodeExecutor<R> {
 
     private final INodeExecutor<R> delegate;
     private final INodeExecutor<R> finisher;
 
     private int iterations;
 
-    public LimitedTerminalNode(int iterations, INodeExecutor<R> delegate, INodeExecutor<R> finisher) {
+    LimitedTerminalNode(int iterations, INodeExecutor<R> delegate, INodeExecutor<R> finisher) {
         this.delegate = delegate;
         this.finisher = finisher;
         this.iterations = iterations;

@@ -7,13 +7,13 @@ import xyz.phanta.aqueduct.execution.Parameters;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-public class IteratingSourceNode<T, R> implements INodeExecutor<R> {
+class IteratingSourceNode<T, R> implements INodeExecutor<R> {
 
     private final UnaryOperator<T> mapper;
 
     private T value;
 
-    public IteratingSourceNode(T initial, UnaryOperator<T> mapper) {
+    IteratingSourceNode(T initial, UnaryOperator<T> mapper) {
         this.mapper = mapper;
         this.value = initial;
     }

@@ -7,7 +7,7 @@ import xyz.phanta.aqueduct.execution.Parameters;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class AdjacentDistinctProcessingNode<R> implements INodeExecutor<R> {
+class AdjacentDistinctProcessingNode<R> implements INodeExecutor<R> {
 
     @Nullable
     private Object prev = null;
@@ -15,7 +15,7 @@ public class AdjacentDistinctProcessingNode<R> implements INodeExecutor<R> {
     @Override
     public Optional<R> execute(Parameters params, Outputs outputs) {
         Object value = params.val();
-        if (prev == null || !value.equals(prev)) {
+        if (!value.equals(prev)) {
             prev = value;
             outputs.put(value);
         }

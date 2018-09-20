@@ -7,11 +7,11 @@ import xyz.phanta.aqueduct.execution.Parameters;
 import java.util.List;
 import java.util.Optional;
 
-public class LimitedProcessingNode<R> implements INodeExecutor<R> {
+class LimitedProcessingNode<R> implements INodeExecutor<R> {
 
     private int count;
 
-    public LimitedProcessingNode(int count) {
+    LimitedProcessingNode(int count) {
         this.count = count;
     }
 

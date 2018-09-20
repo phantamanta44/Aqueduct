@@ -6,7 +6,7 @@ import xyz.phanta.aqueduct.execution.Parameters;
 
 import java.util.Optional;
 
-public class CountingProcessingNode<R> implements INodeExecutor<R> {
+class CountingProcessingNode<R> implements INodeExecutor<R> {
 
     private int counter = 0;
 
