@@ -4,6 +4,7 @@ import xyz.phanta.aqueduct.execution.INodeExecutor;
 
 import javax.annotation.Nonnegative;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class SourceNodes {
@@ -30,6 +31,17 @@ public class SourceNodes {
     public static <T, R> INodeExecutor<R> iterateLimited(@Nonnegative int iterations,
                                                          T initial, UnaryOperator<T> mapper) {
         return limited(iterations, iterate(initial, mapper));
+    }
+
+    public static <T, R> INodeExecutor<R> generate(Supplier<T> supplier) {
+        return (params, outputs) -> {
+            outputs.put(supplier.get());
+            return Optional.empty();
+        };
+    }
+
+    public static <T, R> INodeExecutor generateLimited(@Nonnegative int iterations, Supplier<T> supplier) {
+        return limited(iterations, generate(supplier));
     }
 
     public static <R> INodeExecutor<R> ints(int from, @Nonnegative int step) {
