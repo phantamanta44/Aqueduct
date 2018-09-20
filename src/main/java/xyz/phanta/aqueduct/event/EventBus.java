@@ -1,9 +1,12 @@
 package xyz.phanta.aqueduct.event;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import xyz.phanta.aqueduct.execution.INodeExecutor;
+import xyz.phanta.aqueduct.execution.Outputs;
+import xyz.phanta.aqueduct.execution.Parameters;
+import xyz.phanta.aqueduct.graph.node.DuctNode;
+import xyz.phanta.aqueduct.predef.sink.SinkNodes;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -23,13 +26,35 @@ public class EventBus<T> {
         return promise;
     }
 
-    public void subscribe(Consumer<T> callback) {
+    private void subscribe(Consumer<T> callback) {
         callbacks.add(callback);
     }
 
-    public void returnEvent(T event) {
+    private void returnEvent(T event) {
         CompletableFuture<T> promise = promises.remove(event);
         if (promise != null) promise.complete(event);
+    }
+
+    public <R> INodeExecutor<R> createSource() {
+        return new EventSource<>();
+    }
+
+    public <R> INodeExecutor<R> createSink() {
+        return SinkNodes.forEach(this::returnEvent);
+    }
+
+    private class EventSource<R> implements INodeExecutor<R> {
+
+        @Override
+        public void init(DuctNode<R> node) {
+            subscribe(event -> node.getOutputs().get(0).write(event));
+        }
+
+        @Override
+        public Optional<R> execute(Parameters params, Outputs outputs) {
+            return Optional.empty();
+        }
+
     }
 
 }

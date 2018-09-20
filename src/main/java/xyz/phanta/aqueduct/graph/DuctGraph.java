@@ -37,6 +37,7 @@ public class DuctGraph<R, E extends IDuctEngine<R>> implements IGraphBuilder<R> 
     public DuctNode<R> createNode(INodeExecutor<R> executor) {
         checkFinished();
         DuctNode<R> node = new DuctNode<>(executor, policies);
+        executor.init(node);
         nodes.add(node);
         return node;
     }

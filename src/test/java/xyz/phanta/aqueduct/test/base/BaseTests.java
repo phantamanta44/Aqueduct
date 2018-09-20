@@ -3,6 +3,7 @@ package xyz.phanta.aqueduct.test.base;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import xyz.phanta.aqueduct.event.EventBus;
 import xyz.phanta.aqueduct.graph.builder.IConnectable;
 import xyz.phanta.aqueduct.graph.builder.IGraphBuilder;
 import xyz.phanta.aqueduct.graph.node.INodeConfiguration;
@@ -13,6 +14,9 @@ import xyz.phanta.aqueduct.predef.source.SourceNodes;
 import xyz.phanta.aqueduct.predef.terminal.TerminalNodes;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,16 +29,16 @@ public abstract class BaseTests {
         assertTimeoutPreemptively(Duration.ofSeconds(1), task);
     }
 
-    private static final String[] LOREM_IPSUM = {
+    private static final List<String> LOREM_IPSUM = Arrays.asList(
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod",
             "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua"
-    };
+    );
 
     @Test
     @DisplayName("Lorem ipusm")
     void testLoremIpsum() {
         doWithTimeout(() -> {
-            IGraphBuilder<String[]> builder = getGraphBuilder();
+            IGraphBuilder<List<String>> builder = getGraphBuilder();
 
             // generates lorem ipsum
             INodeConfiguration gen = builder.createNode(SourceNodes.ofValues(LOREM_IPSUM));
@@ -42,12 +46,35 @@ public abstract class BaseTests {
 
             // consumes and collects strings to an array
             //noinspection SuspiciousToArrayCall
-            INodeConfiguration snk = builder.createNode(TerminalNodes.mapMany(vals -> vals.toArray(new String[0])));
-            IncomingSocket<String> snkIn = snk.openSocketIn(String.class, LOREM_IPSUM.length);
+            INodeConfiguration snk = builder.createNode(TerminalNodes.collect());
+            IncomingSocket<String> snkIn = snk.openSocketIn(String.class, LOREM_IPSUM.size());
 
             builder.createEdge(genOut, snkIn);
 
-            assertArrayEquals(LOREM_IPSUM, builder.finish().computeBlocking());
+            assertEquals(LOREM_IPSUM, builder.finish().computeBlocking());
+        });
+    }
+
+    @Test
+    @DisplayName("Event bus-fed lorem ipsum")
+    void testEventBus() {
+        doWithTimeout(() -> {
+            IGraphBuilder<List<String>> builder = getGraphBuilder();
+            EventBus<String> eventBus = new EventBus<>();
+
+            // produces strings from event bus
+            INodeConfiguration gen = builder.createNode(eventBus.createSource());
+            OutgoingSocket<String> genOut = gen.openSocketOut(String.class);
+
+            // consumes strings and collects them to a list
+            INodeConfiguration snk = builder.createNode(TerminalNodes.collect());
+            IncomingSocket<String> snkIn = snk.openSocketIn(String.class, LOREM_IPSUM.size());
+
+            builder.createEdge(genOut, snkIn);
+
+            CompletableFuture<List<String>> promise = builder.finish().compute();
+            for (String s : LOREM_IPSUM) eventBus.publish(s);
+            assertEquals(LOREM_IPSUM, promise.get());
         });
     }
 

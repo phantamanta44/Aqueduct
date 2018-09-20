@@ -1,6 +1,6 @@
 package xyz.phanta.aqueduct.predef.processing;
 
-public class StatefulNodes {
+public class StateProcessNodes {
 
     // TODO counter
 
@@ -13,7 +13,5 @@ public class StatefulNodes {
     // TODO nth
 
     // TODO limit/skip
-
-    // TODO event bus
 
 }
